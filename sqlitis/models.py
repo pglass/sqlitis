@@ -79,6 +79,10 @@ class SelectFrom(Base):
         self.table = self.table.Join(table)
         return self
 
+    def On(self, clause):
+        self.table = self.table.On(clause)
+        return self
+
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
             return 'select([%s])' % self.table.render()

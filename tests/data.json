@@ -128,5 +128,13 @@
   "join_on_conjuction_with_left_and_right_parens": {
     "sql": "foo join bar on (foo.id = bar.foo_id) and (bar.val > 1 or foo.val < 5)",
     "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
+  },
+  "select_from_join_on_condition": {
+    "sql": "select * from foo join bar on foo.id = bar.foo_id",
+    "sqla": "select([foo.join(bar, foo.c.id == bar.c.foo_id)])"
+  },
+  "select_from_join_on_multiclause_condition": {
+    "sql": "SELECT foo.id, bar.val FROM foo join bar ON (foo.id = bar.foo_id) AND (bar.val > 1 OR foo.val < 5)",
+    "sqla": "select([foo.c.id, bar.c.val]).select_from(foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5))))"
   }
 }
