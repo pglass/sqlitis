@@ -1,0 +1,132 @@
+{
+  "lone_select": {
+    "sql": "select",
+    "sqla": "select()"
+  },
+  "select_columns": {
+    "sql": "select a, b",
+    "sqla": "select(['a', 'b'])"
+  },
+  "select_star_from_table": {
+    "sql": "select * from foo",
+    "sqla": "select([foo])",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "xyz" }
+      ]
+    },
+    "output": [
+      [1, "abc"],
+      [2, "xyz"]
+    ]
+  },
+  "select_column_from_table": {
+    "sql": "select id from foo",
+    "sqla": "select([foo.c.id])",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "xyz" }
+      ]
+    },
+    "output": [
+      [1],
+      [2]
+    ]
+  },
+  "select_columns_from_table": {
+    "sql": "select id, foo_id, name from bar",
+    "sqla": "select([bar.c.id, bar.c.foo_id, bar.c.name])",
+    "data": {
+      "foo": [
+        { "name": "abc" }
+      ],
+      "bar": [
+        { "foo_id": 1, "name": "abc" },
+        { "foo_id": 1, "name": "xyz" }
+      ]
+    },
+    "output": [
+      [1, 1, "abc"],
+      [2, 1, "xyz"]
+    ]
+  },
+  "select_qualified_columns_from_table": {
+    "sql": "select foo.id, foo.name from foo",
+    "sqla": "select([foo.c.id, foo.c.name])"
+  },
+  "select_star_from_join": {
+    "sql": "select * from foo join bar",
+    "sqla": "select([foo.join(bar)])"
+  },
+  "select_columns_from_join": {
+    "sql": "select foo.id, bar.id, foo.name, bar.name from foo join bar",
+    "sqla": "select([foo.c.id, bar.c.id, foo.c.name, bar.c.name]).select_from(foo.join(bar))",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "xyz" }
+      ],
+      "bar": [
+        { "foo_id": 1, "name": "foo-abc" },
+        { "foo_id": 2, "name": "foo-xyz" },
+        { "foo_id": 1, "name": "foo-ABC" },
+        { "foo_id": 2, "name": "foo-XYZ" }
+      ]
+    },
+    "output": [
+      [1, 1, "abc", "foo-abc"],
+      [2, 2, "xyz", "foo-xyz"],
+      [1, 3, "abc", "foo-ABC"],
+      [2, 4, "xyz", "foo-XYZ"]
+    ]
+  },
+  "join_two_tables": {
+    "sql": "foo join bar",
+    "sqla": "foo.join(bar)"
+  },
+  "join_three_tables": {
+    "sql": "foo join bar join baz",
+    "sqla": "foo.join(bar).join(baz)"
+  },
+  "join_on_condition_equal": {
+    "sql": "foo join bar on foo.id = bar.foo_id",
+    "sqla": "foo.join(bar, foo.c.id == bar.c.foo_id)"
+  },
+  "join_on_condition_not_equal": {
+    "sql": [
+      "foo join bar on foo.id <> bar.foo_id",
+      "foo join bar on foo.id != bar.foo_id"
+    ],
+    "sqla": "foo.join(bar, foo.c.id != bar.c.foo_id)"
+  },
+  "join_on_condition_equal": {
+    "sql": "foo join bar on foo.id < bar.foo_id",
+    "sqla": "foo.join(bar, foo.c.id < bar.c.foo_id)"
+  },
+  "join_on_condition_equal": {
+    "sql": "foo join bar on foo.id > bar.foo_id",
+    "sqla": "foo.join(bar, foo.c.id > bar.c.foo_id)"
+  },
+  "join_on_expr_and_expr": {
+    "sql": "foo join bar on foo.id = bar.foo_id and bar.val > 1",
+    "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, bar.c.val > 1))"
+  },
+  "join_on_expr_or_expr": {
+    "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1",
+    "sqla": "foo.join(bar, or_(foo.c.id == bar.c.foo_id, bar.c.val > 1))"
+  },
+  "join_on_conjuction_with_right_parens": {
+    "sql": "foo join bar on foo.id = bar.foo_id and (bar.val > 1 or foo.val < 5)",
+    "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
+  },
+  "join_on_conjuction_with_left_parens": {
+    "sql": "foo join bar on (foo.id = bar.foo_id) and bar.val > 1 or foo.val < 5",
+    "sqla": "foo.join(bar, or_(and_(foo.c.id == bar.c.foo_id, bar.c.val > 1), foo.c.val < 5))"
+  },
+  "join_on_conjuction_with_left_and_right_parens": {
+    "sql": "foo join bar on (foo.id = bar.foo_id) and (bar.val > 1 or foo.val < 5)",
+    "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
+  }
+}

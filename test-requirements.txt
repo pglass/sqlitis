@@ -1,0 +1,7 @@
+ddt
+pytest
+pytest-xdist
+pytest-capturelog
+flake8
+yapf
+sqlalchemy
