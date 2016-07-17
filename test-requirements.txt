@@ -1,7 +1,7 @@
 ddt
 pytest
 pytest-xdist
-pytest-capturelog
+pytest-catchlog
 flake8
 yapf
 sqlalchemy
