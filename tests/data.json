@@ -5,7 +5,7 @@
   },
   "select_columns": {
     "sql": "select a, b",
-    "sqla": "select(['a', 'b'])"
+    "sqla": "select([text('a'), text('b')])"
   },
   "select_star_from_table": {
     "sql": "select * from foo",
@@ -129,6 +129,18 @@
     "sql": "foo join bar on (foo.id = bar.foo_id) and (bar.val > 1 or foo.val < 5)",
     "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
   },
+  "join_on_conjuction_operator_precedence": {
+    "sql": "foo join bar on foo.id = bar.foo_id and bar.val > 1 or foo.val < 5",
+    "sqla": "foo.join(bar, or_(and_(foo.c.id == bar.c.foo_id, bar.c.val > 1), foo.c.val < 5))"
+  },
+  "join_on_conjuction_operator_precedence_2": {
+    "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5",
+    "sqla": "foo.join(bar, or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)))"
+  },
+  "join_on_conjuction_operator_precedence_3": {
+    "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5 or foo.val = 7",
+    "sqla": "foo.join(bar, or_(or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)), foo.c.val == 7))"
+  },
   "select_from_join_on_condition": {
     "sql": "select * from foo join bar on foo.id = bar.foo_id",
     "sqla": "select([foo.join(bar, foo.c.id == bar.c.foo_id)])"
@@ -136,5 +148,13 @@
   "select_from_join_on_multiclause_condition": {
     "sql": "SELECT foo.id, bar.val FROM foo join bar ON (foo.id = bar.foo_id) AND (bar.val > 1 OR foo.val < 5)",
     "sqla": "select([foo.c.id, bar.c.val]).select_from(foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5))))"
+  },
+  "select_from_subquery": {
+    "sql": "SELECT id FROM (SELECT * FROM foo)",
+    "sqla": "select([select([foo]).c.id])"
+  },
+  "select_columns_as_alias": {
+    "sql": "SELECT foo.id AS the_id, foo.val AS the_val FROM foo",
+    "sqla": "select([foo.c.id.label('the_id'), foo.c.val.label('the_val')])"
   }
 }
