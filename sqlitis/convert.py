@@ -86,13 +86,14 @@ def tokens_to_sqla(tokens):
             clause, length = comparison_to_sqla(tokens[i + 1:])
             m = m.On(clause)
             i += length
-        elif tok.normalized == '*':
-            m = m.Star()
         elif type(tok) is S.IdentifierList:
-            m = m.Columns([x.normalized for x in tok.get_identifiers()])
+            cols = []
+            for x in tok.get_identifiers():
+                cols.append(M.Field(x.normalized, alias=x.get_alias()))
+            m = m.Columns(cols)
         elif type(tok) is S.Identifier:
             if prev_tok is not None and prev_tok.normalized == 'SELECT':
-                m = m.Columns([tok.normalized])
+                m = m.Columns([M.Field(tok.normalized, alias=tok.get_alias())])
             else:
                 m = m.Table(tok.normalized)
         elif type(tok) is S.Comparison:
