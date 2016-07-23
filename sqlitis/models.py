@@ -19,7 +19,7 @@ def convert_column(col, table=None):
         raise Exception("field %s invalid for table %s" % (col, table.name))
     elif '.' in col:
         if col.count('.') > 1:
-            raise Exception("field %s invalid (too many '.')")
+            raise Exception("field '%s' invalid (too many '.')" % col)
         return '.c.'.join(col.split('.'))
     elif '.' not in col and table:
         return '%s.c.%s' % (table.name, col)
@@ -238,9 +238,9 @@ class Comparison(Base):
 
 class Conjuction(Base):
 
-    def __init__(self, left):
+    def __init__(self, left, right=None):
         self.left = left
-        self.right = Comparison()
+        self.right = right or Comparison()
 
     def Field(self, name, literal=False):
         self.right = self.right.Field(name, literal)

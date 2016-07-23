@@ -129,6 +129,18 @@
     "sql": "foo join bar on (foo.id = bar.foo_id) and (bar.val > 1 or foo.val < 5)",
     "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
   },
+  "join_on_conjuction_operator_precedence": {
+    "sql": "foo join bar on foo.id = bar.foo_id and bar.val > 1 or foo.val < 5",
+    "sqla": "foo.join(bar, or_(and_(foo.c.id == bar.c.foo_id, bar.c.val > 1), foo.c.val < 5))"
+  },
+  "join_on_conjuction_operator_precedence_2": {
+    "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5",
+    "sqla": "foo.join(bar, or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)))"
+  },
+  "join_on_conjuction_operator_precedence_3": {
+    "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5 or foo.val = 7",
+    "sqla": "foo.join(bar, or_(or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)), foo.c.val == 7))"
+  },
   "select_from_join_on_condition": {
     "sql": "select * from foo join bar on foo.id = bar.foo_id",
     "sqla": "select([foo.join(bar, foo.c.id == bar.c.foo_id)])"

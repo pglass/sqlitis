@@ -40,7 +40,8 @@ def debug(f):
                 debug_tokens(a)
 
         result = f(*args, **kwargs)
-        LOG.debug("%s returned %r", f.__name__, result)
+        if result is not None:
+            LOG.debug("%s returned %r", f.__name__, result)
         return result
 
     return wrapped
@@ -127,39 +128,63 @@ def tokens_to_sqla(tokens):
 
 @debug
 def comparison_to_sqla(tokens):
+    # operators of higher precedence "steal" arguments first.
+    # 'x OR y AND z OR w' is equivalent to 'x OR (y AND z) OR w'.
+    precedence = {
+        'AND': 2,
+        'OR': 1,
+    }
+    fns = {
+        'AND': lambda a, b: M.And(a, b),
+        'OR': lambda a, b: M.Or(a, b),
+    }
 
-    # the comparison expression can start with
-    #   "(x > 1 or y < 2)"
-    #   "x > 1 and y > 2"
-    if type(tokens[0]) is S.Parenthesis:
-        subtokens = remove_whitespace(tokens[0].tokens[1:-1])
-        m, _ = comparison_to_sqla(subtokens)
-    elif type(tokens[0]) is S.Comparison:
-        m = build_comparison(tokens[0])
-    else:
-        raise Exception("bad call to comparison_to_sqla")
+    @debug
+    def _shift(val, args):
+        args.append(val)
 
-    count = 1
-    for tok in tokens[1:]:
-        if tok.normalized == 'AND':
-            m = m.And()
-        elif tok.normalized == 'OR':
-            m = m.Or()
-        elif type(tok) is S.Parenthesis:
+    @debug
+    def _reduce(args, ops):
+        assert len(args) >= 2
+        assert len(ops) >= 1
+        right = args.pop()
+        left = args.pop()
+        op = fns[ops.pop()]
+        m = op(left, right)
+        args.append(m)
+
+    # stacks for a shift-reduce parser
+    ARGS = []
+    OPS = []
+
+    for count, tok in enumerate(tokens, 1):
+        # (x > 1 and y > 2)
+        if type(tok) is S.Parenthesis:
             subtokens = remove_whitespace(tok.tokens)
-            assert isinstance(m, M.Conjuction)
-            m.right, _ = comparison_to_sqla(subtokens[1:-1])
+            m, _ = comparison_to_sqla(subtokens[1:-1])
+            _shift(m, ARGS)
+        # x > 1
         elif type(tok) is S.Comparison:
-            assert isinstance(m, M.Conjuction)
-            m.right = build_comparison(tok)
+            m = build_comparison(tok)
+            _shift(m, ARGS)
+        # AND/OR
+        elif tok.normalized in precedence:
+            while OPS and precedence[OPS[-1]] >= precedence[tok.normalized]:
+                if len(ARGS) < 2:
+                    raise Exception("unexpected token %s" % tok)
+                _reduce(ARGS, OPS)
+            _shift(tok.normalized, OPS)
         else:
             break
 
-        count += 1
+        LOG.debug("%s: OPS=%s ARGS=%s", count, OPS, ARGS)
 
-        LOG.debug(" %r", tok)
+    while OPS and len(ARGS) > 1:
+        _reduce(ARGS, OPS)
 
-    return m, count
+    if len(ARGS) != 1:
+        raise Exception("invalid comparison clause: %s" % tokens)
+    return ARGS.pop(), count
 
 
 @debug
