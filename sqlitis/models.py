@@ -90,21 +90,32 @@ class SelectFrom(Base):
         self.table = self.table.On(clause)
         return self
 
+    def Where(self, clause):
+        return SelectFromWhere(self, clause)
+
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
             return 'select([%s])' % self.table.render()
         elif isinstance(self.table, Table):
-            # cols = [convert_column(c, self.table) for c in self.select._cols]
             cols = [c.render(self.table) for c in self.select._cols]
             return 'select([%s])' % ", ".join(cols)
-        elif isinstance(self.table, Join):
-            # cols = [convert_column(c) for c in self.select._cols]
+        elif isinstance(self.table, (Join, SelectFrom)):
             cols = [c.render() for c in self.select._cols]
             return 'select([%s]).select_from(%s)' % (
                 ", ".join(cols), self.table.render()
             )
         else:
             raise Exception("%s failed to render" % self.__class__.__name__)
+
+
+class SelectFromWhere(Base):
+
+    def __init__(self, select, clause):
+        self.select = select
+        self.clause = clause
+
+    def render(self):
+        return "%s.where(%s)" % (self.select.render(), self.clause.render())
 
 
 class Table(Base):
