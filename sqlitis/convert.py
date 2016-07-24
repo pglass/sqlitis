@@ -55,7 +55,7 @@ def remove_whitespace(tokens):
 def to_sqla(sql):
     tokens = sqlparse.parse(sql)[0].tokens
     tokens = remove_whitespace(tokens)
-    return tokens_to_sqla(tokens)
+    return tokens_to_sqla(tokens).render()
 
 
 @debug
@@ -102,8 +102,7 @@ def tokens_to_sqla(tokens):
             subtokens = remove_whitespace(tok.tokens[1:-1])
             # whole expression has parens - "(select * from thing)"
             if prev_tok is None:
-                sub = tokens_to_sqla(subtokens)
-                m = sub
+                m = tokens_to_sqla(subtokens)
             # "join (select id, name from ...)"
             elif prev_tok.normalized == 'JOIN':
                 sub = tokens_to_sqla(subtokens)
@@ -114,7 +113,7 @@ def tokens_to_sqla(tokens):
                 m.On(clause)
             else:
                 LOG.warning(
-                    "not sure how to handle parentheses - trying something!"
+                    "not sure how to handle parentheses. treating as subquery!"
                 )
                 sub = tokens_to_sqla(subtokens)
                 m = m.Table(sub)
@@ -123,7 +122,7 @@ def tokens_to_sqla(tokens):
         i += 1
 
     if isinstance(m, M.Base):
-        return m.render()
+        return m
     return None
 
 

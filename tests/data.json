@@ -151,10 +151,14 @@
   },
   "select_from_subquery": {
     "sql": "SELECT id FROM (SELECT * FROM foo)",
-    "sqla": "select([select([foo]).c.id])"
+    "sqla": "select([text('id')]).select_from(select([foo]))"
   },
-  "select_columns_as_alias": {
-    "sql": "SELECT foo.id AS the_id, foo.val AS the_val FROM foo",
-    "sqla": "select([foo.c.id.label('the_id'), foo.c.val.label('the_val')])"
+  "select_aliased_columns": {
+    "sql": "SELECT foo.id AS the_id, foo.name AS the_name FROM foo",
+    "sqla": "select([foo.c.id.label('the_id'), foo.c.name.label('the_name')])"
+  },
+  "select_from_select_aliased_columns": {
+    "sql": "SELECT the_id, the_name FROM (SELECT foo.id AS the_id, foo.name AS the_name FROM foo)",
+    "sqla": "select([text('the_id'), text('the_name')]).select_from(select([foo.c.id.label('the_id'), foo.c.name.label('the_name')]))"
   }
 }

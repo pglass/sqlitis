@@ -94,11 +94,9 @@ class SelectFrom(Base):
         if self.select.is_wildcard() or not self.select._cols:
             return 'select([%s])' % self.table.render()
         elif isinstance(self.table, Table):
-            # cols = [convert_column(c, self.table) for c in self.select._cols]
             cols = [c.render(self.table) for c in self.select._cols]
             return 'select([%s])' % ", ".join(cols)
-        elif isinstance(self.table, Join):
-            # cols = [convert_column(c) for c in self.select._cols]
+        elif isinstance(self.table, (Join, SelectFrom)):
             cols = [c.render() for c in self.select._cols]
             return 'select([%s]).select_from(%s)' % (
                 ", ".join(cols), self.table.render()
