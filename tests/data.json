@@ -117,27 +117,27 @@
     "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1",
     "sqla": "foo.join(bar, or_(foo.c.id == bar.c.foo_id, bar.c.val > 1))"
   },
-  "join_on_conjuction_with_right_parens": {
+  "join_on_conjunction_with_right_parens": {
     "sql": "foo join bar on foo.id = bar.foo_id and (bar.val > 1 or foo.val < 5)",
     "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
   },
-  "join_on_conjuction_with_left_parens": {
+  "join_on_conjunction_with_left_parens": {
     "sql": "foo join bar on (foo.id = bar.foo_id) and bar.val > 1 or foo.val < 5",
     "sqla": "foo.join(bar, or_(and_(foo.c.id == bar.c.foo_id, bar.c.val > 1), foo.c.val < 5))"
   },
-  "join_on_conjuction_with_left_and_right_parens": {
+  "join_on_conjunction_with_left_and_right_parens": {
     "sql": "foo join bar on (foo.id = bar.foo_id) and (bar.val > 1 or foo.val < 5)",
     "sqla": "foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(bar.c.val > 1, foo.c.val < 5)))"
   },
-  "join_on_conjuction_operator_precedence": {
+  "join_on_conjunction_operator_precedence": {
     "sql": "foo join bar on foo.id = bar.foo_id and bar.val > 1 or foo.val < 5",
     "sqla": "foo.join(bar, or_(and_(foo.c.id == bar.c.foo_id, bar.c.val > 1), foo.c.val < 5))"
   },
-  "join_on_conjuction_operator_precedence_2": {
+  "join_on_conjunction_operator_precedence_2": {
     "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5",
     "sqla": "foo.join(bar, or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)))"
   },
-  "join_on_conjuction_operator_precedence_3": {
+  "join_on_conjunction_operator_precedence_3": {
     "sql": "foo join bar on foo.id = bar.foo_id or bar.val > 1 and foo.val < 5 or foo.val = 7",
     "sqla": "foo.join(bar, or_(or_(foo.c.id == bar.c.foo_id, and_(bar.c.val > 1, foo.c.val < 5)), foo.c.val == 7))"
   },
@@ -160,5 +160,21 @@
   "select_from_select_aliased_columns": {
     "sql": "SELECT the_id, the_name FROM (SELECT foo.id AS the_id, foo.name AS the_name FROM foo)",
     "sqla": "select([text('the_id'), text('the_name')]).select_from(select([foo.c.id.label('the_id'), foo.c.name.label('the_name')]))"
+  },
+  "select_from_where": {
+    "sql": "SELECT * FROM foo WHERE foo.id = 1",
+    "sqla": "select([foo]).where(foo.c.id == 1)"
+  },
+  "select_from_where_expr_and_expr": {
+    "sql": "SELECT * FROM foo WHERE foo.id > 1 AND foo.name = \"wumbo\"",
+    "sqla": "select([foo]).where(and_(foo.c.id > 1, foo.c.name == \"wumbo\"))"
+  },
+  "select_from_where_parenthesis": {
+    "sql": "SELECT * FROM foo WHERE (foo.id > 1 AND foo.name = \"wumbo\")",
+    "sqla": "select([foo]).where(and_(foo.c.id > 1, foo.c.name == \"wumbo\"))"
+  },
+  "select_from_join_where": {
+    "sql": "SELECT * FROM foo join bar WHERE foo.id > 1 AND foo.name = \"wumbo\"",
+    "sqla": "select([foo.join(bar)]).where(and_(foo.c.id > 1, foo.c.name == \"wumbo\"))"
   }
 }

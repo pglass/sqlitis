@@ -90,6 +90,9 @@ class SelectFrom(Base):
         self.table = self.table.On(clause)
         return self
 
+    def Where(self, clause):
+        return SelectFromWhere(self, clause)
+
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
             return 'select([%s])' % self.table.render()
@@ -103,6 +106,16 @@ class SelectFrom(Base):
             )
         else:
             raise Exception("%s failed to render" % self.__class__.__name__)
+
+
+class SelectFromWhere(Base):
+
+    def __init__(self, select, clause):
+        self.select = select
+        self.clause = clause
+
+    def render(self):
+        return "%s.where(%s)" % (self.select.render(), self.clause.render())
 
 
 class Table(Base):

@@ -86,6 +86,11 @@ def tokens_to_sqla(tokens):
             clause, length = comparison_to_sqla(tokens[i + 1:])
             m = m.On(clause)
             i += length
+        elif type(tok) is S.Where:
+            subtokens = remove_whitespace(tok.tokens[2:])
+            LOG.debug('WHERE <%s tokens>', len(subtokens))
+            clause, _ = comparison_to_sqla(subtokens)
+            m = m.Where(clause)
         elif type(tok) is S.IdentifierList:
             cols = []
             for x in tok.get_identifiers():
@@ -158,16 +163,13 @@ def comparison_to_sqla(tokens):
     OPS = []
 
     for count, tok in enumerate(tokens, 1):
-        # (x > 1 and y > 2)
         if type(tok) is S.Parenthesis:
             subtokens = remove_whitespace(tok.tokens)
             m, _ = comparison_to_sqla(subtokens[1:-1])
             _shift(m, ARGS)
-        # x > 1
         elif type(tok) is S.Comparison:
             m = build_comparison(tok)
             _shift(m, ARGS)
-        # AND/OR
         elif tok.normalized in precedence:
             while OPS and precedence[OPS[-1]] >= precedence[tok.normalized]:
                 if len(ARGS) < 2:
@@ -191,9 +193,17 @@ def comparison_to_sqla(tokens):
 def build_comparison(tok):
     assert type(tok) is S.Comparison
 
+    def is_string_literal(tok):
+        text = tok.normalized
+        return all([text.startswith('"'), text.endswith('"')])
+
     m = M.Comparison()
     for tok in remove_whitespace(tok.tokens):
-        if type(tok) is S.Identifier:
+        LOG.debug("  %s %s", tok, type(tok))
+        # sqlparse mistreats string literals as identifiers
+        if type(tok) is S.Identifier and is_string_literal(tok):
+            m = m.Field(tok.normalized, literal=True)
+        elif type(tok) is S.Identifier:
             m = m.Field(tok.normalized)
         elif tok.ttype is T.Comparison:
             m = m.Op(tok.normalized)
