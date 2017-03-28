@@ -14,7 +14,7 @@ setup_params = dict(
     include_package_data=True,
     description='convert sql to sqlalchemy expressions',
     install_requires=[
-        'sqlparse',
+        'sqlparse==0.2.0',
     ],
     entry_points={
         'console_scripts': [
