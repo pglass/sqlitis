@@ -3,5 +3,5 @@ pytest
 pytest-xdist
 pytest-catchlog
 flake8
-yapf
+yapf==0.16.1
 sqlalchemy
