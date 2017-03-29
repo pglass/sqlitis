@@ -73,6 +73,8 @@ def tokens_to_sqla(tokens):
 
         if tok.normalized == 'SELECT':
             m = m.Select()
+        elif tok.normalized == 'DISTINCT':
+            m = m.Distinct()
         elif tok.normalized == 'FROM':
             m = m.From()
         elif tok.normalized == 'JOIN':
@@ -98,7 +100,9 @@ def tokens_to_sqla(tokens):
                 cols.append(M.Field(x.normalized, alias=x.get_alias()))
             m = m.Columns(cols)
         elif type(tok) is S.Identifier:
-            if prev_tok is not None and prev_tok.normalized == 'SELECT':
+            if prev_tok is not None and prev_tok.normalized in [
+                'SELECT', 'DISTINCT'
+            ]:
                 m = m.Columns([M.Field(tok.normalized, alias=tok.get_alias())])
             else:
                 m = m.Table(tok.normalized)

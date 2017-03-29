@@ -23,11 +23,13 @@ class Select(Base):
     """
         sql                 model
         ---                 ---
-        select *            Select().star()
-        select id, name     Select().cols(['id', 'name'])
+        select *            Select().Star()
+        select id, name     Select().Columns(['id', 'name'])
+        select distinct *   Select().Distinct().Star()
     """
 
     def __init__(self):
+        self._is_distinct = False
         self._cols = None
 
     def Star(self):
@@ -50,12 +52,22 @@ class Select(Base):
     def From(self):
         return SelectFrom(self)
 
+    def Distinct(self):
+        self._is_distinct = True
+        return self
+
     def render(self):
         if self.is_wildcard():
             raise Exception("cannot render 'select *' without table")
+
         if not self._cols:
-            return 'select()'
-        return 'select([%s])' % ", ".join(c.render() for c in self._cols)
+            result = 'select()'
+        else:
+            result = 'select([%s])' % ", ".join(c.render() for c in self._cols)
+
+        if self._is_distinct:
+            result += '.distinct()'
+        return result
 
 
 class SelectFrom(Base):
@@ -87,17 +99,21 @@ class SelectFrom(Base):
 
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
-            return 'select([%s])' % self.table.render()
+            result = 'select([%s])' % self.table.render()
         elif isinstance(self.table, Table):
             cols = [c.render(self.table) for c in self.select._cols]
-            return 'select([%s])' % ", ".join(cols)
+            result = 'select([%s])' % ", ".join(cols)
         elif isinstance(self.table, (Join, SelectFrom)):
             cols = [c.render() for c in self.select._cols]
-            return 'select([%s]).select_from(%s)' % (
+            result = 'select([%s]).select_from(%s)' % (
                 ", ".join(cols), self.table.render()
             )
         else:
             raise Exception("%s failed to render" % self.__class__.__name__)
+
+        if self.select._is_distinct:
+            result += ".distinct()"
+        return result
 
 
 class SelectFromWhere(Base):

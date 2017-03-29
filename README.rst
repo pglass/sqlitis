@@ -51,14 +51,14 @@ Use tox to run the tests.
     $ tox -e py27
     ### Run just style/formatting checks
     $ tox -e flake8
-    
+
 `yapf`_ is used to automatically fix code style/formatting errors. It will reformat your code in place.
 
 .. code-block:: bash
 
     ### Auto-fix style/formatting checks
     $ tox -e yapf
-    
+
 There are three types of tests:
 
 - Unit tests of the internal models
@@ -66,7 +66,7 @@ There are three types of tests:
 - Functional tests that execute the generated SQLAlchemy expressions, against a sqlite database.
 
 Most of these tests are generated from data in ``tests/data.json``.
-    
+
 SQL Support Checklist
 ---------------------
 
@@ -81,7 +81,7 @@ SQL Support Checklist
     - [x] Select from subquery: ``SELECT id FROM (SELECT * FROM foo)``
     - [x] Where: ``SELECT id FROM foo WHERE id = 123``
     - [ ] Between: ``SELECT a FROM foo WHERE foo.val BETWEEN 1 AND 20``
-    - [ ] Select distinct: ``SELECT DISTINCT a FROM foo``
+    - [x] Select distinct: ``SELECT DISTINCT a FROM foo``
     - [ ] Aggregate functions (SUM, AVG, COUNT, MIN, MAX): ``SELECT COUNT(*) FROM foo``
     - [ ] Group by: ``SELECT COUNT(*) FROM foo GROUP BY column``
     - [ ] Like
