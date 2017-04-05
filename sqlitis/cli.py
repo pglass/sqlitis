@@ -1,3 +1,4 @@
+from __future__ import print_function
 import argparse
 import logging
 import sys
@@ -22,14 +23,16 @@ def main():
         logging.basicConfig(level=logging.DEBUG)
 
     try:
-        print to_sqla(" ".join(args.sql))
+        result = to_sqla(" ".join(args.sql))
+        print(result)
     except Exception as e:
-        print >> sys.stderr, e
+        print(e, file=sys.stderr)
         if args.debug:
             raise
+        return 1
 
-    sys.exit(0)
+    return 0
 
 
 if __name__ == '__main__':
-    main()
+    sys.exit(main())

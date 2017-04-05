@@ -1,10 +1,11 @@
+import logging
+
 import sqlparse
 import sqlparse.tokens as T
 import sqlparse.sql as S
 
-import models as M
+import sqlitis.models as M
 
-import logging
 LOG = logging.getLogger(__name__)
 
 

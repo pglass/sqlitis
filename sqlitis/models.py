@@ -4,14 +4,6 @@ class Base(object):
         return ''
 
 
-class Intermediary(Base):
-
-    def render(self):
-        raise Exception(
-            "cannot render intermediary %s directly" % self.__class__.__name__
-        )
-
-
 def convert_column(col, table=None):
     """Turns foo.id into foo.c.id. If a table is given, then id becomes
     <table>.c.id"""
