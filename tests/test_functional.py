@@ -4,8 +4,8 @@ import unittest
 import ddt
 from sqlalchemy import select  # noqa
 
-import db
-from db import foo, bar, wumbo
+from tests import db
+from tests.db import foo, bar, wumbo
 from sqlitis.convert import to_sqla
 
 LOG = logging.getLogger(__name__)
