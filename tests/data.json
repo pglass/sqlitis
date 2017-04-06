@@ -52,6 +52,80 @@
       [2, 1, "xyz"]
     ]
   },
+  "select_distinct": {
+    "sql": "select distinct",
+    "sqla": "select().distinct()"
+  },
+  "select_distinct_column_from_table": {
+    "sql": "select distinct name from foo",
+    "sqla": "select([foo.c.name]).distinct()",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "abc" },
+        { "name": "xyz" },
+        { "name": "xyz" }
+      ]
+    },
+    "output": [
+      ["abc"],
+      ["xyz"]
+    ]
+  },
+  "select_distinct_from_table_with_where_clause": {
+    "sql": "select distinct name from foo where foo.name = \"abc\"",
+    "sqla": "select([foo.c.name]).distinct().where(foo.c.name == \"abc\")",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "abc" },
+        { "name": "xyz" },
+        { "name": "xyz" }
+      ]
+    },
+    "output": [
+      ["abc"]
+    ]
+  },
+  "select_distinct_from_join": {
+    "sql": "select distinct foo.name from foo join bar",
+    "sqla": "select([foo.c.name]).select_from(foo.join(bar)).distinct()",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "xyz" }
+      ],
+      "bar": [
+        { "foo_id": 1, "name": "bar_abc" },
+        { "foo_id": 1, "name": "bar_abc" },
+        { "foo_id": 2, "name": "bar_xyz" },
+        { "foo_id": 2, "name": "bar_xyz" }
+      ]
+    },
+    "output": [
+      ["abc"],
+      ["xyz"]
+    ]
+  },
+  "select_distinct_from_join_with_where": {
+    "sql": "SELECT DISTINCT foo.name FROM foo JOIN bar WHERE bar.name = \"bar_abc\"",
+    "sqla": "select([foo.c.name]).select_from(foo.join(bar)).distinct().where(bar.c.name == \"bar_abc\")",
+    "data": {
+      "foo": [
+        { "name": "abc" },
+        { "name": "xyz" }
+      ],
+      "bar": [
+        { "foo_id": 1, "name": "bar_abc" },
+        { "foo_id": 1, "name": "bar_abc" },
+        { "foo_id": 2, "name": "bar_xyz" },
+        { "foo_id": 2, "name": "bar_xyz" }
+      ]
+    },
+    "output": [
+      ["abc"]
+    ]
+  },
   "select_qualified_columns_from_table": {
     "sql": "select foo.id, foo.name from foo",
     "sqla": "select([foo.c.id, foo.c.name])"
