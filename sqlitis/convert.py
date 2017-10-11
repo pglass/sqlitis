@@ -49,7 +49,7 @@ def debug(f):
 
 
 def remove_whitespace(tokens):
-    return [x for x in tokens if not x.is_whitespace()]
+    return [x for x in tokens if not x.is_whitespace]
 
 
 @debug
