@@ -24,7 +24,7 @@ class TestToSqla(unittest.TestCase):
 
         x = sqlparse.parse(sql)[0]
         for x in x.tokens:
-            if not x.is_whitespace():
+            if not x.is_whitespace:
                 LOG.debug('  %r %s', x, type(x))
 
         self.assertEqual(to_sqla(sql), sqla)
