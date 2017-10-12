@@ -2,7 +2,10 @@ import logging
 import unittest
 
 import ddt
+from sqlalchemy import and_  # noqa
+from sqlalchemy import between  # noqa
 from sqlalchemy import select  # noqa
+from sqlalchemy import not_  # noqa
 
 from tests import db
 from tests.db import foo, bar, wumbo
