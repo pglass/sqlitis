@@ -305,3 +305,24 @@ class Or(Conjuction):
 
     def render(self):
         return 'or_(%s, %s)' % (self.left.render(), self.right.render())
+
+
+class Not(Base):
+
+    def __init__(self, clause):
+        self.clause = clause
+
+    def render(self):
+        return 'not_(%s)' % self.clause.render()
+
+
+class Between(Conjuction):
+
+    def render(self):
+        if not isinstance(self.right, And):
+            raise Exception("Unsupported 'Between' Clause")
+        lower = self.right.left
+        upper = self.right.right
+        return 'between(%s, %s, %s)' % (
+            self.left.render(), lower.render(), upper.render()
+        )

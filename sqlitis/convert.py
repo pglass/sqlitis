@@ -143,10 +143,14 @@ def comparison_to_sqla(tokens):
     precedence = {
         'AND': 2,
         'OR': 1,
+        'BETWEEN': 0,
+        'NOT': -1,
     }
     fns = {
         'AND': lambda a, b: M.And(a, b),
         'OR': lambda a, b: M.Or(a, b),
+        'BETWEEN': lambda a, b: M.Between(a, b),
+        'NOT': lambda a: M.Not(a),
     }
 
     @debug
@@ -155,12 +159,25 @@ def comparison_to_sqla(tokens):
 
     @debug
     def _reduce(args, ops):
-        assert len(args) >= 2
         assert len(ops) >= 1
-        right = args.pop()
-        left = args.pop()
-        op = fns[ops.pop()]
-        m = op(left, right)
+        op_name = ops.pop()
+        op = fns[op_name]
+
+        # handling unary operators
+        if op_name in ['NOT']:
+            assert len(args) >= 1
+            arg = args.pop()
+            m = op(arg)
+            LOG.debug("_reduce %s %s = %s", op_name, arg.render(), m.render())
+        else:
+            assert len(args) >= 2
+            right = args.pop()
+            left = args.pop()
+            m = op(left, right)
+            LOG.debug(
+                "_reduce %s %s %s = %s", op_name,
+                right.render(), left.render(), m.render()
+            )
         args.append(m)
 
     # stacks for a shift-reduce parser
@@ -172,21 +189,26 @@ def comparison_to_sqla(tokens):
             subtokens = remove_whitespace(tok.tokens)
             m, _ = comparison_to_sqla(subtokens[1:-1])
             _shift(m, ARGS)
+        # sqlparse packages up conditional AND/OR clauses as Comparisons
         elif type(tok) is S.Comparison:
             m = build_comparison(tok)
             _shift(m, ARGS)
         elif tok.normalized in precedence:
             while OPS and precedence[OPS[-1]] >= precedence[tok.normalized]:
-                if len(ARGS) < 2:
-                    raise Exception("unexpected token %s" % tok)
                 _reduce(ARGS, OPS)
             _shift(tok.normalized, OPS)
+        # sqlparse does not package up other expressions, like Between
+        elif type(tok) is S.Identifier or tok.ttype in [
+            T.Literal, T.String, T.Number, T.Number.Integer, T.Number.Float
+        ]:
+            m = sql_literal_to_model(tok)
+            _shift(m, ARGS)
         else:
             break
 
         LOG.debug("%s: OPS=%s ARGS=%s", count, OPS, ARGS)
 
-    while OPS and len(ARGS) > 1:
+    while OPS and len(ARGS) >= 1:
         _reduce(ARGS, OPS)
 
     if len(ARGS) != 1:
@@ -195,26 +217,42 @@ def comparison_to_sqla(tokens):
 
 
 @debug
-def build_comparison(tok):
-    assert type(tok) is S.Comparison
+def sql_literal_to_model(tok, m=M):
+    """
+    :param m: the source model to "append" the literal to.
+        defaults to M - the sqlitis models module (which means a fresh model
+        is created)
+    :return: the resulting model
+    """
 
     def is_string_literal(tok):
         text = tok.normalized
         return all([text.startswith('"'), text.endswith('"')])
 
+    # sqlparse treats string literals as identifiers
+    if type(tok) is S.Identifier and is_string_literal(tok):
+        return m.Field(tok.normalized, literal=True)
+    elif type(tok) is S.Identifier:
+        return m.Field(tok.normalized)
+    elif tok.ttype is T.Comparison:
+        return m.Op(tok.normalized)
+    elif tok.ttype in [
+        T.Literal, T.String, T.Number, T.Number.Integer, T.Number.Float
+    ]:
+        return m.Field(tok.normalized, literal=True)
+
+    return None
+
+
+@debug
+def build_comparison(tok):
+    assert type(tok) is S.Comparison
+
     m = M.Comparison()
     for tok in remove_whitespace(tok.tokens):
         LOG.debug("  %s %s", tok, type(tok))
-        # sqlparse mistreats string literals as identifiers
-        if type(tok) is S.Identifier and is_string_literal(tok):
-            m = m.Field(tok.normalized, literal=True)
-        elif type(tok) is S.Identifier:
-            m = m.Field(tok.normalized)
-        elif tok.ttype is T.Comparison:
-            m = m.Op(tok.normalized)
-        elif tok.ttype in [
-            T.Literal, T.String, T.Number, T.Number.Integer, T.Number.Float
-        ]:
-            m = m.Field(tok.normalized, literal=True)
+        m = sql_literal_to_model(tok, m)
+        if not m:
+            raise Exception("[BUG] Failed to convert %s to model" % tok)
 
     return m

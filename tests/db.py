@@ -23,7 +23,7 @@ bar = Table(
 )
 
 wumbo = Table(
-    'wumo',
+    'wumbo',
     metadata,
     Column(
         'id', Integer, nullable=False, primary_key=True, autoincrement=True

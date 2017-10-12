@@ -248,7 +248,96 @@
     "sqla": "select([foo]).where(and_(foo.c.id > 1, foo.c.name == \"wumbo\"))"
   },
   "select_from_join_where": {
-    "sql": "SELECT * FROM foo join bar WHERE foo.id > 1 AND foo.name = \"wumbo\"",
+    "sql": "SELECT * FROM foo JOIN bar WHERE foo.id > 1 AND foo.name = \"wumbo\"",
     "sqla": "select([foo.join(bar)]).where(and_(foo.c.id > 1, foo.c.name == \"wumbo\"))"
+  },
+  "select_from_where_between": {
+    "sql": "SELECT * FROM foo WHERE foo.id BETWEEN 2 AND 4",
+    "sqla": "select([foo]).where(between(foo.c.id, 2, 4))",
+    "data": {
+      "foo": [
+        { "name": "foo1" },
+        { "name": "foo2" },
+        { "name": "foo3" },
+        { "name": "foo4" },
+        { "name": "foo5" }
+      ]
+    },
+    "output": [
+      [2, "foo2"],
+      [3, "foo3"],
+      [4, "foo4"]
+    ]
+  },
+  "select_from_where_not_between": {
+    "sql": "SELECT * FROM foo WHERE foo.id NOT BETWEEN 2 AND 3",
+    "sqla": "select([foo]).where(not_(between(foo.c.id, 2, 3)))",
+    "data": {
+      "foo": [
+        { "name": "foo1" },
+        { "name": "foo2" },
+        { "name": "foo3" },
+        { "name": "foo4" },
+        { "name": "foo5" }
+      ]
+    },
+    "output": [
+      [1, "foo1"],
+      [4, "foo4"],
+      [5, "foo5"]
+    ]
+  },
+  "select_from_where_between_and_clause": {
+    "sql": "SELECT * FROM foo WHERE (foo.id BETWEEN 3 AND 10) AND foo.name <> \"wumbo\"",
+    "sqla": "select([foo]).where(and_(between(foo.c.id, 3, 10), foo.c.name != \"wumbo\"))",
+    "data": {
+      "foo": [
+        { "name": "foo1" },
+        { "name": "foo2" },
+        { "name": "foo3" },
+        { "name": "foo4" },
+        { "name": "wumbo" },
+        { "name": "foo6" },
+        { "name": "wumbo" },
+        { "name": "foo8" }
+      ]
+    },
+    "output": [
+      [3, "foo3"],
+      [4, "foo4"],
+      [6, "foo6"],
+      [8, "foo8"]
+    ]
+  },
+  "select_from_where_not_between_and_clause": {
+    "sql": "SELECT * FROM foo WHERE (foo.id NOT BETWEEN 3 AND 10) AND foo.name <> \"wumbo\"",
+    "sqla": "select([foo]).where(and_(not_(between(foo.c.id, 3, 10)), foo.c.name != \"wumbo\"))",
+    "data": {
+      "foo": [
+        { "name": "wumbo" },
+        { "name": "foo2" },
+        { "name": "wumbo" },
+        { "name": "foo4" },
+        { "name": "wumbo" },
+        { "name": "foo6" },
+        { "name": "wumbo" },
+        { "name": "foo8" }
+      ]
+    },
+    "output": [
+      [2, "foo2"]
+    ]
+  },
+  "select_from_join_where_between": {
+    "sql": "SELECT * FROM foo JOIN bar WHERE foo.id BETWEEN 10 AND 20",
+    "sqla": "select([foo.join(bar)]).where(between(foo.c.id, 10, 20))"
+  },
+  "select_from_join_where_not_between": {
+    "sql": "SELECT * FROM foo JOIN bar WHERE foo.id NOT BETWEEN 1 AND 4",
+    "sqla": "select([foo.join(bar)]).where(not_(between(foo.c.id, 1, 4)))"
+  },
+  "select_from_where_between_strings": {
+    "sql": "SELECT * FROM foo WHERE foo.name BETWEEN \"a\" AND \"z\"",
+    "sqla": "select([foo]).where(between(foo.c.name, \"a\", \"z\"))"
   }
 }
