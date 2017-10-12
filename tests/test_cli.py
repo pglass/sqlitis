@@ -23,7 +23,7 @@ def run_cmd(cmd):
 @ddt.ddt
 class TestSqlitisCLI(unittest.TestCase):
 
-    @ddt.file_data('cli_data.json')
+    @ddt.file_data('cli_data.yaml')
     def test_cli(self, sql, exitcode, stdout, stderr):
         ret, out, err = run_cmd(['sqlitis', sql])
         self.assertEqual(ret, exitcode)

@@ -1,7 +1,8 @@
 ddt
-pytest
-pytest-xdist
-pytest-catchlog
 flake8
-yapf==0.16.1
+pytest
+pytest-catchlog
+pytest-xdist
+PyYAML
 sqlalchemy
+yapf==0.16.1
