@@ -12,7 +12,7 @@ LOG = logging.getLogger(__name__)
 @ddt.ddt
 class TestToSqla(unittest.TestCase):
 
-    @ddt.file_data('data.json')
+    @ddt.file_data('data.yaml')
     def test_to_sqla(self, sql, sqla, *args, **kwargs):
         if not isinstance(sql, list):
             sql = [sql]

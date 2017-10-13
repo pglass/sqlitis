@@ -22,12 +22,10 @@ class TestFunctional(unittest.TestCase):
         super(TestFunctional, self).setUp()
         self.engine = db.connect()
 
-    @ddt.file_data('data.json')
+    @ddt.file_data('data.yaml')
     def test_select(self, sql, data=None, output=None, **kwargs):
-        if not data:
-            self.skipTest("missing data")
-        if not output:
-            self.skipTest("missing expected output")
+        if not data or not output:
+            self.skipTest("No functional test specified for this SQL query")
 
         self._prepare_data(data)
         sqla = eval(to_sqla(sql))
