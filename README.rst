@@ -1,8 +1,12 @@
 .. image:: https://travis-ci.org/pglass/sqlitis.svg?branch=master
     :target: https://travis-ci.org/pglass/sqlitis
 
-.. image:: https://badge.fury.io/py/sqlitis.svg
+.. image:: https://img.shields.io/pypi/v/sqlitis.svg
     :target: https://pypi.python.org/pypi/sqlitis
+
+.. image:: https://img.shields.io/pypi/pyversions/sqlitis.svg
+    :target: https://pypi.python.org/pypi/sqlitis
+
 
 =========
  sqlitis
