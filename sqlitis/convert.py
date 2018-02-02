@@ -175,8 +175,8 @@ def comparison_to_sqla(tokens):
             left = args.pop()
             m = op(left, right)
             LOG.debug(
-                "_reduce %s %s %s = %s", op_name,
-                right.render(), left.render(), m.render()
+                "_reduce %s %s %s = %s", op_name, right.render(),
+                left.render(), m.render()
             )
         args.append(m)
 

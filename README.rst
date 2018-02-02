@@ -9,13 +9,9 @@ This is a tool to convert plain SQL queries to SQLAlchemy expressions. It is usa
 
 This converts to the `SQLAlchemy expression language`_. It does not support the SQLAlchemy ORM.
 
-This library is currently experimental and has not yet been published to PyPI. To try it out, you will need to clone this repo and install it.
-
 .. code-block:: bash
 
-    $ git clone git@github.com:pglass/sqlitis.git
-    $ cd sqlitits && pip install .
-    $ sqlitis --help
+    $ pip install sqlitis
 
 Examples
 --------

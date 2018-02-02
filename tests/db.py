@@ -59,8 +59,7 @@ tags = Table(
     'tags', metadata,
     Column(
         'id', Integer, nullable=False, primary_key=True, autoincrement=True
-    ),
-    Column('key', Text, nullable=False),
+    ), Column('key', Text, nullable=False),
     Column('value', Text, nullable=False), UniqueConstraint('key', 'value')
 )
 
