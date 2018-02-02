@@ -4,7 +4,7 @@ long_description = open('README.rst').read()
 
 setup_params = dict(
     name='sqlitis',
-    version='0.0.1',
+    version='0.0.2',
     license='MIT',
     author='Paul Glass',
     author_email='pnglass@gmail.com',
