@@ -71,23 +71,30 @@ SQL Support Checklist
 ---------------------
 
 - [ ] Select
-    - [x] Star: ``SELECT * FROM foo``
-    - [x] Multiple columns: ``SELECT a, b, c FROM foo``
-    - [x] Qualified column names: ``SELECT foo.a, foo.b FROM foo``
-    - [x] Column aliases: ``SELECT foo.id AS foo_id, foo.name AS foo_name from FOO``
-    - [x] Simple join: ``SELECT foo.a, bar.b FROM foo JOIN bar``
-    - [x] On Clauses: ``SELECT foo.a, bar.b FROM foo JOIN bar ON foo.id = bar.foo_id``
-    - [x] Conjuctions (AND/OR): ``SELECT foo.a, bar.b FROM foo join bar ON foo.id = bar.foo_id AND foo.val > 1``
-    - [x] Select from subquery: ``SELECT id FROM (SELECT * FROM foo)``
-    - [x] Where: ``SELECT id FROM foo WHERE id = 123``
-    - [ ] Between: ``SELECT a FROM foo WHERE foo.val BETWEEN 1 AND 20``
-    - [x] Select distinct: ``SELECT DISTINCT a FROM foo``
-    - [ ] Aggregate functions (SUM, AVG, COUNT, MIN, MAX): ``SELECT COUNT(*) FROM foo``
-    - [ ] Group by: ``SELECT COUNT(*) FROM foo GROUP BY column``
-    - [ ] Like
-    - [ ] Limit/offset
-    - [ ] Order by
-    - [ ] Outer join
+
+  - [x] Star: ``SELECT * FROM foo``
+  - [x] Multiple columns: ``SELECT a, b, c FROM foo``
+  - [x] Qualified column names: ``SELECT foo.a, foo.b FROM foo``
+  - [x] Column aliases: ``SELECT foo.id AS foo_id, foo.name AS foo_name from FOO``
+  - [ ] Joins
+
+    - [x] Plain Join: ``SELECT foo.a, bar.b FROM foo JOIN bar``
+    - [x] Inner Join: ``SELECT foo.a, bar.b FROM foo INNER JOIN bar``
+    - [ ] Left/Right Joins
+    - [ ] Outer Joins
+
+  - [x] On Clauses: ``SELECT foo.a, bar.b FROM foo JOIN bar ON foo.id = bar.foo_id``
+  - [x] Conjuctions (AND/OR): ``SELECT foo.a, bar.b FROM foo join bar ON foo.id = bar.foo_id AND foo.val > 1``
+  - [x] Select from subquery: ``SELECT id FROM (SELECT * FROM foo)``
+  - [x] Where: ``SELECT id FROM foo WHERE id = 123``
+  - [x] Between: ``SELECT a FROM foo WHERE foo.val BETWEEN 1 AND 20``
+  - [x] Select distinct: ``SELECT DISTINCT a FROM foo``
+  - [ ] Aggregate functions (SUM, AVG, COUNT, MIN, MAX): ``SELECT COUNT(*) FROM foo``
+  - [ ] Group by: ``SELECT COUNT(*) FROM foo GROUP BY column``
+  - [ ] Like
+  - [ ] Limit/offset
+  - [ ] Order by
+
 - [ ] Insert
 - [ ] Update
 - [ ] Delete
