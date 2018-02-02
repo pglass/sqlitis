@@ -77,7 +77,7 @@ def tokens_to_sqla(tokens):
             m = m.Distinct()
         elif tok.normalized == 'FROM':
             m = m.From()
-        elif tok.normalized == 'JOIN':
+        elif tok.normalized in ['JOIN', 'INNER JOIN']:
             if next_tok:
                 m = m.Join(next_tok.normalized)
                 i += 1

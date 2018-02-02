@@ -1,11 +1,15 @@
 join_on_condition_equal:
-  sql: foo join bar on foo.id > bar.foo_id
+  sql:
+  - foo join bar on foo.id > bar.foo_id
+  - foo inner join bar on foo.id > bar.foo_id
   sqla: foo.join(bar, foo.c.id > bar.c.foo_id)
 
 join_on_condition_not_equal:
   sql:
   - foo join bar on foo.id <> bar.foo_id
   - foo join bar on foo.id != bar.foo_id
+  - foo inner join bar on foo.id <> bar.foo_id
+  - foo inner join bar on foo.id != bar.foo_id
   sqla: foo.join(bar, foo.c.id != bar.c.foo_id)
 
 join_on_conjunction_operator_precedence:
@@ -45,7 +49,9 @@ join_three_tables:
   sqla: foo.join(bar).join(baz)
 
 join_two_tables:
-  sql: foo join bar
+  sql:
+  - foo join bar
+  - foo inner join bar
   sqla: foo.join(bar)
 
 lone_select:
@@ -72,7 +78,9 @@ select_columns:
   sqla: select([text('a'), text('b')])
 
 select_columns_from_join:
-  sql: select foo.id, bar.id, foo.name, bar.name from foo join bar
+  sql:
+  - select foo.id, bar.id, foo.name, bar.name from foo join bar
+  - select foo.id, bar.id, foo.name, bar.name from inner foo join bar
   sqla: select([foo.c.id, bar.c.id, foo.c.name, bar.c.name]).select_from(foo.join(bar))
   data:
     bar:
@@ -276,7 +284,9 @@ select_qualified_columns_from_table:
   sqla: select([foo.c.id, foo.c.name])
 
 select_star_from_join:
-  sql: select * from foo join bar
+  sql:
+  - select * from foo join bar
+  - select * from foo inner join bar
   sqla: select([foo.join(bar)])
 
 select_star_from_table:
