@@ -1,5 +1,7 @@
 import setuptools
 
+long_description = open('README.rst').read()
+
 setup_params = dict(
     name='sqlitis',
     version='0.0.1',
@@ -13,6 +15,7 @@ setup_params = dict(
     package_dir={'sqlitis': 'sqlitis'},
     include_package_data=True,
     description='convert sql to sqlalchemy expressions',
+    long_description=long_description,
     install_requires=[
         'sqlparse==0.2.4',
     ],
@@ -28,6 +31,8 @@ setup_params = dict(
         'License :: OSI Approved :: MIT License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
     ],
 )
 
