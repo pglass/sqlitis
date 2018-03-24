@@ -19,6 +19,11 @@ setup_params = dict(
     install_requires=[
         'sqlparse==0.2.4',
     ],
+    extras_require={
+        'web': [
+            'Flask==0.12.2',
+        ],
+    },
     entry_points={
         'console_scripts': [
             'sqlitis = sqlitis.cli:main',

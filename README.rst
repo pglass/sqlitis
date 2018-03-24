@@ -38,6 +38,11 @@ Converting a join:
     $ sqlitis 'foo join bar on foo.id = bar.foo_id and (foo.val < 100 or bar.val < 100)'
     foo.join(bar, and_(foo.c.id == bar.c.foo_id, or_(foo.c.val < 100, bar.c.val < 100)))
 
+Web UI
+------
+
+There is a basic web ui in the ``web`` sub-directory. See the `web README`_ for more.
+
 Running tests
 -------------
 
@@ -105,3 +110,4 @@ SQL Support Checklist
 .. _SQLAlchemy expression language: http://docs.sqlalchemy.org/en/latest/core/tutorial.html#sql-expression-language-tutorial
 .. _flake8: http://flake8.pycqa.org/en/latest/
 .. _yapf: https://github.com/google/yapf
+.. _web README: web/README.rst
