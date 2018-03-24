@@ -25,7 +25,7 @@ Build the Javascript bundle:
 
 Start the web server (requires ``sqlitis`` to be installed).
 
- .. code-block:: bash
+.. code-block:: bash
 
     $ sqlitis --web
 
@@ -33,4 +33,4 @@ Start the web server (requires ``sqlitis`` to be installed).
     $ sqlitis --web --debug
 
 
-_yarn: https://yarnpkg.com/en/docs/install
+.. _yarn: https://yarnpkg.com/en/docs/install
