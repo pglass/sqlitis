@@ -61,3 +61,12 @@ class TestModels(unittest.TestCase):
             m.render(), 'foo.join(bar, and_(foo.c.id == bar.c.foo_id, '
             'foo.c.val != bar.c.thing))'
         )
+
+    def test_join_on_condition_join_table(self):
+        m = Table('foo').Join('bar').\
+            On().Field('foo.id').Op('=').Field('bar.foo_id').\
+            Join('wumbo').On().Field('foo.id').Op('=').Field('wumbo.foo_id')
+        self.assertEqual(
+            m.render(), 'foo.join(bar, foo.c.id == bar.c.foo_id)'
+            '.join(wumbo, foo.c.id == wumbo.c.foo_id)'
+        )

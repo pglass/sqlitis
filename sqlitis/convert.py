@@ -127,6 +127,12 @@ def tokens_to_sqla(tokens):
                 )
                 sub = tokens_to_sqla(subtokens)
                 m = m.Table(sub)
+        elif tok.is_keyword:
+            # Not the right error message in all cases, but better than nothing
+            raise Exception(
+                "Unexpected keyword '{0}'. Maybe you need to quote: `{0}`?"
+                .format(tok.normalized)
+            )
 
         LOG.debug("%s %s", i, type(m))
         i += 1
@@ -204,6 +210,8 @@ def comparison_to_sqla(tokens):
             m = sql_literal_to_model(tok)
             _shift(m, ARGS)
         else:
+            # don't count unconsumed tokens
+            count -= 1
             break
 
         LOG.debug("%s: OPS=%s ARGS=%s", count, OPS, ARGS)

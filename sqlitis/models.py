@@ -4,9 +4,10 @@ class Base(object):
         return ''
 
 
-def convert_column(col, table=None):
+def convert_column(col, table=None, quote_open='`', quote_close='`'):
     """Turns foo.id into foo.c.id. If a table is given, then id becomes
     <table>.c.id"""
+    col = col.replace(quote_open, '').replace(quote_close, '')
     if '.' in col and table and not col.startswith(table.name):
         raise Exception("field %s invalid for table %s" % (col, table.name))
     elif '.' in col:
@@ -17,6 +18,10 @@ def convert_column(col, table=None):
         return '%s.c.%s' % (table.name, col)
     else:
         return "text('%s')" % col
+
+
+def unquote_quoted_table_name(name, quote_open='`', quote_close='`'):
+    return name.lstrip(quote_open).rstrip(quote_close)
 
 
 class Select(Base):
@@ -129,7 +134,7 @@ class SelectFromWhere(Base):
 class Table(Base):
 
     def __init__(self, name):
-        self.name = name
+        self.name = unquote_quoted_table_name(name)
 
     def Join(self, table):
         return Join(self, table)

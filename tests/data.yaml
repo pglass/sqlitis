@@ -1,6 +1,8 @@
 join_on_condition_equal:
   sql:
   - foo join bar on foo.id > bar.foo_id
+  - '`foo` join bar on foo.id > bar.foo_id'
+  - '`foo` join `bar` on foo.id > bar.foo_id'
   - foo inner join bar on foo.id > bar.foo_id
   sqla: foo.join(bar, foo.c.id > bar.c.foo_id)
 
@@ -45,7 +47,11 @@ join_on_expr_or_expr:
   sqla: foo.join(bar, or_(foo.c.id == bar.c.foo_id, bar.c.val > 1))
 
 join_three_tables:
-  sql: foo join bar join baz
+  sql:
+  - foo join bar join baz
+  - foo inner join bar join baz
+  - foo join bar inner join baz
+  - foo inner join bar inner join baz
   sqla: foo.join(bar).join(baz)
 
 join_two_tables:
@@ -80,7 +86,8 @@ select_columns:
 select_columns_from_join:
   sql:
   - select foo.id, bar.id, foo.name, bar.name from foo join bar
-  - select foo.id, bar.id, foo.name, bar.name from inner foo join bar
+  - select foo.id, bar.id, foo.name, bar.name from foo inner join bar
+  - select `foo`.`id`, `bar`.`id`, `foo`.`name`, `bar`.`name` from `foo` join `bar`
   sqla: select([foo.c.id, bar.c.id, foo.c.name, bar.c.name]).select_from(foo.join(bar))
   data:
     bar:
@@ -299,3 +306,49 @@ select_star_from_table:
   output:
   - [1, "abc"]
   - [2, "xyz"]
+
+select_star_from_keyword:
+  sql:
+  - select * from user
+  - select * from table
+  sqla: ''
+  exception: |
+    Unexpected keyword '\w+'. Maybe you need to quote: `\w+`\?
+
+select_star_from_three_joined_tables:
+  sql:
+  - select * from foo join bar join wumbo
+  - select * from foo inner join bar join wumbo
+  - select * from foo join bar inner join wumbo
+  - select * from foo inner join bar inner join wumbo
+  sqla: select([foo.join(bar).join(wumbo)])
+  data:
+    foo:
+      - {name: "abc"}
+    bar:
+      - {name: "123", foo_id: 1}
+    wumbo:
+      - {name: "squidward", timestamp: 1234, result: "good", bar_id: 1, foo_id: 1}
+  output:
+    - [
+      1, 'abc',                            # foo: id, name
+      1, 1, '123',                         # bar: id, foo_id, name,
+      1, 1, 1, "squidward", 1234, 'good',  # wumbo: id, foo_id, bar_id, name, timestamp, result
+    ]
+
+select_star_from_joined_tables_with_condition:
+  sql: select * from foo join bar on foo.id = bar.foo_id join wumbo on foo.id = wumbo.foo_id
+  sqla: select([foo.join(bar, foo.c.id == bar.c.foo_id).join(wumbo, foo.c.id == wumbo.c.foo_id)])
+  data:
+    foo:
+      - {name: "abc"}
+    bar:
+      - {name: "123", foo_id: 1}
+    wumbo:
+      - {name: "squidward", timestamp: 1234, result: "good", bar_id: 1, foo_id: 1}
+  output:
+    - [
+      1, 'abc',                            # foo: id, name
+      1, 1, '123',                         # bar: id, foo_id, name,
+      1, 1, 1, "squidward", 1234, 'good',  # wumbo: id, foo_id, bar_id, name, timestamp, result
+    ]

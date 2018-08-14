@@ -13,13 +13,13 @@ LOG = logging.getLogger(__name__)
 class TestToSqla(unittest.TestCase):
 
     @ddt.file_data('data.yaml')
-    def test_to_sqla(self, sql, sqla, *args, **kwargs):
+    def test_to_sqla(self, sql, sqla, exception=None, *args, **kwargs):
         if not isinstance(sql, list):
             sql = [sql]
         for s in sql:
-            self._run(s, sqla)
+            self._run(s, sqla, exception)
 
-    def _run(self, sql, sqla):
+    def _run(self, sql, sqla, exception):
         LOG.debug("sql: '%s'", sql)
 
         x = sqlparse.parse(sql)[0]
@@ -27,4 +27,21 @@ class TestToSqla(unittest.TestCase):
             if not x.is_whitespace:
                 LOG.debug('  %r %s', x, type(x))
 
-        self.assertEqual(to_sqla(sql), sqla)
+        try:
+            actual_sqla = to_sqla(sql)
+        except Exception as e:
+            if not exception:
+                raise
+            self._assertRegexMatches(str(e), exception.strip())
+        else:
+            self.assertEqual(actual_sqla, sqla)
+
+    def _assertRegexMatches(self, text, regex, msg=None):
+        # Python 2
+        if hasattr(self, 'assertRegexpMatches'):
+            return self.assertRegexpMatches(text, regex, msg)
+        # Python 3
+        elif hasattr(self, 'assertRegex'):
+            return self.assertRegex(text, regex, msg)
+        else:
+            raise Exception("test error, no regex assertions found")
