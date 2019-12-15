@@ -1,26 +1,25 @@
 class Base(object):
-
     def render(self):
-        return ''
+        return ""
 
 
-def convert_column(col, table=None, quote_open='`', quote_close='`'):
+def convert_column(col, table=None, quote_open="`", quote_close="`"):
     """Turns foo.id into foo.c.id. If a table is given, then id becomes
     <table>.c.id"""
-    col = col.replace(quote_open, '').replace(quote_close, '')
-    if '.' in col and table and not col.startswith(table.name):
+    col = col.replace(quote_open, "").replace(quote_close, "")
+    if "." in col and table and not col.startswith(table.name):
         raise Exception("field %s invalid for table %s" % (col, table.name))
-    elif '.' in col:
-        if col.count('.') > 1:
+    elif "." in col:
+        if col.count(".") > 1:
             raise Exception("field '%s' invalid (too many '.')" % col)
-        return '.c.'.join(col.split('.'))
-    elif '.' not in col and table:
-        return '%s.c.%s' % (table.name, col)
+        return ".c.".join(col.split("."))
+    elif "." not in col and table:
+        return "%s.c.%s" % (table.name, col)
     else:
         return "text('%s')" % col
 
 
-def unquote_quoted_table_name(name, quote_open='`', quote_close='`'):
+def unquote_quoted_table_name(name, quote_open="`", quote_close="`"):
     return name.lstrip(quote_open).rstrip(quote_close)
 
 
@@ -38,7 +37,7 @@ class Select(Base):
         self._cols = None
 
     def Star(self):
-        return self.Columns('*')
+        return self.Columns("*")
 
     def Columns(self, cols):
         cols = list(cols)
@@ -50,9 +49,7 @@ class Select(Base):
         return self
 
     def is_wildcard(self):
-        return (
-            self._cols and len(self._cols) == 1 and self._cols[0].name == '*'
-        )
+        return self._cols and len(self._cols) == 1 and self._cols[0].name == "*"
 
     def From(self):
         return SelectFrom(self)
@@ -66,12 +63,12 @@ class Select(Base):
             raise Exception("cannot render 'select *' without table")
 
         if not self._cols:
-            result = 'select()'
+            result = "select()"
         else:
-            result = 'select([%s])' % ", ".join(c.render() for c in self._cols)
+            result = "select([%s])" % ", ".join(c.render() for c in self._cols)
 
         if self._is_distinct:
-            result += '.distinct()'
+            result += ".distinct()"
         return result
 
 
@@ -104,14 +101,15 @@ class SelectFrom(Base):
 
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
-            result = 'select([%s])' % self.table.render()
+            result = "select([%s])" % self.table.render()
         elif isinstance(self.table, Table):
             cols = [c.render(self.table) for c in self.select._cols]
-            result = 'select([%s])' % ", ".join(cols)
+            result = "select([%s])" % ", ".join(cols)
         elif isinstance(self.table, (Join, SelectFrom)):
             cols = [c.render() for c in self.select._cols]
-            result = 'select([%s]).select_from(%s)' % (
-                ", ".join(cols), self.table.render()
+            result = "select([%s]).select_from(%s)" % (
+                ", ".join(cols),
+                self.table.render(),
             )
         else:
             raise Exception("%s failed to render" % self.__class__.__name__)
@@ -122,7 +120,6 @@ class SelectFrom(Base):
 
 
 class SelectFromWhere(Base):
-
     def __init__(self, select, clause):
         self.select = select
         self.clause = clause
@@ -132,7 +129,6 @@ class SelectFromWhere(Base):
 
 
 class Table(Base):
-
     def __init__(self, name):
         self.name = unquote_quoted_table_name(name)
 
@@ -144,7 +140,6 @@ class Table(Base):
 
 
 class Field(Base):
-
     def __init__(self, name, literal=False, alias=None):
         self.name = name
         self.literal = literal
@@ -160,7 +155,6 @@ class Field(Base):
 
 
 class Op(Base):
-
     def __init__(self, op):
         self.op = op
 
@@ -190,7 +184,6 @@ class Join(Base):
     """
 
     class Item(object):
-
         def __init__(self, table, clause=None):
             self.table = table
             self.clause = clause
@@ -233,16 +226,13 @@ class Join(Base):
         assert self._tables[0].clause is None
         for t in self._tables[1:]:
             if t.clause:
-                result += '.join(%s, %s)' % (
-                    t.table.render(), t.clause.render()
-                )
+                result += ".join(%s, %s)" % (t.table.render(), t.clause.render())
             else:
-                result += '.join(%s)' % t.table.render()
+                result += ".join(%s)" % t.table.render()
         return result
 
 
 class Comparison(Base):
-
     def __init__(self):
         self.left = None
         self.op = None
@@ -268,13 +258,10 @@ class Comparison(Base):
         return Or(self)
 
     def render(self):
-        return '%s %s %s' % (
-            self.left.render(), self.op.render(), self.right.render()
-        )
+        return "%s %s %s" % (self.left.render(), self.op.render(), self.right.render())
 
 
 class Conjuction(Base):
-
     def __init__(self, left, right=None):
         self.left = left
         self.right = right or Comparison()
@@ -295,39 +282,36 @@ class Conjuction(Base):
 
 
 class On(Conjuction):
-
     def render(self):
-        return '%s' % self.right.render()
+        return "%s" % self.right.render()
 
 
 class And(Conjuction):
-
     def render(self):
-        return 'and_(%s, %s)' % (self.left.render(), self.right.render())
+        return "and_(%s, %s)" % (self.left.render(), self.right.render())
 
 
 class Or(Conjuction):
-
     def render(self):
-        return 'or_(%s, %s)' % (self.left.render(), self.right.render())
+        return "or_(%s, %s)" % (self.left.render(), self.right.render())
 
 
 class Not(Base):
-
     def __init__(self, clause):
         self.clause = clause
 
     def render(self):
-        return 'not_(%s)' % self.clause.render()
+        return "not_(%s)" % self.clause.render()
 
 
 class Between(Conjuction):
-
     def render(self):
         if not isinstance(self.right, And):
             raise Exception("Unsupported 'Between' Clause")
         lower = self.right.left
         upper = self.right.right
-        return 'between(%s, %s, %s)' % (
-            self.left.render(), lower.render(), upper.render()
+        return "between(%s, %s, %s)" % (
+            self.left.render(),
+            lower.render(),
+            upper.render(),
         )
