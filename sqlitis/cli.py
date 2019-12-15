@@ -15,9 +15,9 @@ def parse_args():
         description="Convert sql to sqlalchemy expressions"
     )
 
-    parser.add_argument('-d', '--debug', action='store_true')
-    parser.add_argument('-V', '--version', action='store_true')
-    parser.add_argument('sql', nargs='*', default=None)
+    parser.add_argument("-d", "--debug", action="store_true")
+    parser.add_argument("-V", "--version", action="store_true")
+    parser.add_argument("sql", nargs="*", default=None)
 
     return parser.parse_args()
 
@@ -25,20 +25,20 @@ def parse_args():
 def main():
     args = parse_args()
     if args.version:
-        print('sqlitis %s' % VERSION)
+        print("sqlitis %s" % VERSION)
         return 0
 
     if not args.sql:
-        print('ERROR: No SQL string provided', file=sys.stderr)
+        print("ERROR: No SQL string provided", file=sys.stderr)
         return 1
 
     if args.debug:
         logging.basicConfig(level=logging.DEBUG)
 
     # log version info
-    LOG.debug('Version info')
+    LOG.debug("Version info")
     for key, val in version_info().items():
-        LOG.debug('  %s: %s', key, val)
+        LOG.debug("  %s: %s", key, val)
 
     try:
         result = to_sqla(" ".join(args.sql))
@@ -52,5 +52,5 @@ def main():
     return 0
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     sys.exit(main())

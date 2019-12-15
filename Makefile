@@ -6,10 +6,13 @@ BUMPTYPE=patch
 
 $(VENV):
 	virtualenv $(VENV)
-	$(VENV_ACTIVATE); pip install tox bumpversion
+	$(VENV_ACTIVATE); pip install tox bumpversion black
 
 test: $(VENV)
 	$(VENV_ACTIVATE); tox
+
+format: $(VENV)
+	$(VENV_ACTIVATE); black setup.py sqlitis tests
 
 release: test
 	python setup.py sdist upload -r pypi

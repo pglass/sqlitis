@@ -10,15 +10,15 @@ LOG = logging.getLogger(__name__)
 
 def version_info():
     return {
-        'sqlitis': VERSION,
-        'python': platform.python_version(),
-        'platform': platform.platform(),
+        "sqlitis": VERSION,
+        "python": platform.python_version(),
+        "platform": platform.platform(),
     }
 
 
 def debug_tokens(tokens):
     for t in tokens:
-        LOG.debug('  %r %s', t, type(t))
+        LOG.debug("  %r %s", t, type(t))
 
 
 def is_tokens(x):
@@ -41,9 +41,9 @@ def debug(f):
         LOG.debug("%s %s", f.__name__, args_str + kwargs_str)
 
         # try to find tokens
-        if 'tokens' in kwargs:
-            if is_tokens(kwargs['tokens']):
-                debug_tokens(kwargs['tokens'])
+        if "tokens" in kwargs:
+            if is_tokens(kwargs["tokens"]):
+                debug_tokens(kwargs["tokens"])
         for a in args:
             if is_tokens(a):
                 debug_tokens(a)

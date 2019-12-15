@@ -3,7 +3,10 @@ import unittest
 
 import ddt
 from sqlalchemy import (  # noqa: F401
-    and_, between, select, not_,
+    and_,
+    between,
+    select,
+    not_,
 )
 
 from tests import db
@@ -16,12 +19,11 @@ TABLES = {"foo": foo, "bar": bar, "wumbo": wumbo}
 
 @ddt.ddt
 class TestFunctional(unittest.TestCase):
-
     def setUp(self):
         super(TestFunctional, self).setUp()
         self.engine = db.connect()
 
-    @ddt.file_data('data.yaml')
+    @ddt.file_data("data.yaml")
     def test_select(self, sql, data=None, output=None, **kwargs):
         if not data or not output:
             self.skipTest("No functional test specified for this SQL query")
@@ -35,7 +37,7 @@ class TestFunctional(unittest.TestCase):
     def _prepare_data(self, data):
         LOG.debug("Preparing test data")
         for table_name, values in data.items():
-            LOG.debug('  insert into %s values %s', table_name, values)
+            LOG.debug("  insert into %s values %s", table_name, values)
             table = TABLES[table_name]
             self.engine.execute(table.insert(), values)
 
