@@ -1,8 +1,19 @@
 import logging
+import platform
 
 import sqlparse.sql as S
 
+from sqlitis.version import VERSION
+
 LOG = logging.getLogger(__name__)
+
+
+def version_info():
+    return {
+        'sqlitis': VERSION,
+        'python': platform.python_version(),
+        'platform': platform.platform(),
+    }
 
 
 def debug_tokens(tokens):

@@ -1,10 +1,12 @@
 import setuptools
 
+from sqlitis.version import VERSION
+
 long_description = open('README.rst').read()
 
 setup_params = dict(
     name='sqlitis',
-    version='0.0.3',
+    version=VERSION,
     license='MIT',
     author='Paul Glass',
     author_email='pnglass@gmail.com',

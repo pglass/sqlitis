@@ -16,6 +16,10 @@ def remove_whitespace(tokens):
 
 @debug
 def to_sqla(sql):
+    sql = sql.strip()
+    if not sql:
+        raise Exception("ERROR: Empty SQL string provided")
+
     tokens = sqlparse.parse(sql)[0].tokens
     tokens = remove_whitespace(tokens)
     return tokens_to_sqla(tokens).render()
