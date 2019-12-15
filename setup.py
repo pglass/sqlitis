@@ -2,7 +2,7 @@ import setuptools
 
 from sqlitis.version import VERSION
 
-long_description = open('README.rst').read()
+long_description = open('README.md').read()
 
 setup_params = dict(
     name='sqlitis',
@@ -18,6 +18,7 @@ setup_params = dict(
     include_package_data=True,
     description='convert sql to sqlalchemy expressions',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     install_requires=[
         'sqlparse==0.2.4',
     ],
