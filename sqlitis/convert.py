@@ -18,7 +18,7 @@ def remove_whitespace(tokens):
 def to_sqla(sql):
     sql = sql.strip()
     if not sql:
-        raise Exception("ERROR: Empty SQL string provided")
+        raise Exception("Empty SQL string provided")
 
     tokens = sqlparse.parse(sql)[0].tokens
     tokens = remove_whitespace(tokens)
@@ -36,6 +36,9 @@ def tokens_to_sqla(tokens):
         prev_tok = None if i - 1 < 0 else tokens[i - 1]
         tok = tokens[i]
         next_tok = None if i + 1 >= len(tokens) else tokens[i + 1]
+
+        if tok.normalized in ["INSERT", "UPDATE", "DELETE"]:
+            raise Exception("'{}' is not supported yet. Sorry!".format(tok.normalized))
 
         if tok.normalized == "SELECT":
             m = m.Select()
@@ -92,9 +95,9 @@ def tokens_to_sqla(tokens):
         elif tok.is_keyword:
             # Not the right error message in all cases, but better than nothing
             raise Exception(
-                "Unexpected keyword '{0}'. Maybe you need to quote: `{0}`?".format(
-                    tok.normalized
-                )
+                "Unexpected keyword '{0}'. This may be an invalid keyword, or unsupported "
+                "at this time.\nTo use a keyword as a plain string, use backticks: "
+                "`{0}`".format(tok.normalized)
             )
 
         LOG.debug("%s %s", i, type(m))

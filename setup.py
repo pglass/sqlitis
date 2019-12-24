@@ -19,8 +19,8 @@ setup_params = dict(
     description="convert sql to sqlalchemy expressions",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    install_requires=["sqlparse==0.2.4",],
-    entry_points={"console_scripts": ["sqlitis = sqlitis.cli:main",],},
+    install_requires=["sqlparse==0.3.0"],
+    entry_points={"console_scripts": ["sqlitis = sqlitis.cli:main"]},
     classifiers=[
         "Development Status :: 2 - Pre-Alpha",
         "Environment :: Console",

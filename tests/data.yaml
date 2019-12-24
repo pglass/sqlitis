@@ -313,7 +313,7 @@ select_star_from_keyword:
   - select * from table
   sqla: ''
   exception: |
-    Unexpected keyword '\w+'. Maybe you need to quote: `\w+`\?
+    Unexpected keyword '\w+'.
 
 select_star_from_three_joined_tables:
   sql:
@@ -352,3 +352,11 @@ select_star_from_joined_tables_with_condition:
       1, 1, '123',                         # bar: id, foo_id, name,
       1, 1, 1, "squidward", 1234, 'good',  # wumbo: id, foo_id, bar_id, name, timestamp, result
     ]
+
+insert:
+  sql:
+  - insert
+  - insert into foo values ('abc')
+  sqla: ''
+  exception: |
+    'INSERT' is not supported yet

@@ -8,4 +8,6 @@ invalid_sql:
   sql: "select from select"
   exitcode: 1
   stdout: ""
-  stderr: "'SelectFrom' object has no attribute 'Select'\n"
+  stderr: |
+    ERROR: Failed to convert SQL: select from select
+    'SelectFrom' object has no attribute 'Select'
