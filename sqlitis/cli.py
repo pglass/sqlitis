@@ -40,11 +40,13 @@ def main():
     for key, val in version_info().items():
         LOG.debug("  %s: %s", key, val)
 
+    sql_string = " ".join(args.sql)
     try:
-        result = to_sqla(" ".join(args.sql))
+        result = to_sqla(sql_string)
         print(result)
     except Exception as e:
-        print(e, file=sys.stderr)
+        print("ERROR: Failed to convert SQL: {}".format(sql_string), file=sys.stderr)
+        print("{}".format(e), file=sys.stderr)
         if args.debug:
             raise
         return 1

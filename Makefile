@@ -26,4 +26,4 @@ bump: $(VENV)
 	@echo " 	git push origin master && git push --tags"
 
 clean:
-	rm -rf $(VENV)
+	rm -rf $(VENV) .tox

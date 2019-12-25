@@ -31,16 +31,6 @@ class TestToSqla(unittest.TestCase):
         except Exception as e:
             if not exception:
                 raise
-            self._assertRegexMatches(str(e), exception.strip())
+            self.assertRegex(str(e), exception.strip())
         else:
             self.assertEqual(actual_sqla, sqla)
-
-    def _assertRegexMatches(self, text, regex, msg=None):
-        # Python 2
-        if hasattr(self, "assertRegexpMatches"):
-            return self.assertRegexpMatches(text, regex, msg)
-        # Python 3
-        elif hasattr(self, "assertRegex"):
-            return self.assertRegex(text, regex, msg)
-        else:
-            raise Exception("test error, no regex assertions found")
