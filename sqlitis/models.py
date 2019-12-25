@@ -92,6 +92,13 @@ class SelectFrom(Base):
         self.table = self.table.Join(table)
         return self
 
+    def CrossJoin(self, table):
+        if not self.table:
+            self.table = table
+        else:
+            self.table = self.table.CrossJoin(table)
+        return self
+
     def On(self, clause):
         self.table = self.table.On(clause)
         return self
@@ -105,6 +112,23 @@ class SelectFrom(Base):
         elif isinstance(self.table, Table):
             cols = [c.render(self.table) for c in self.select._cols]
             result = "select([%s])" % ", ".join(cols)
+        elif isinstance(self.table, CrossJoin):
+            # sqlitis can do these,
+            #   select * from foo                       -> select([foo])
+            #   select * from foo, bar                  -> select([foo, bar])
+            #   select * from foo, bar                  -> select([foo, bar])
+            #   select foo.id, bar.id from foo, bar     -> select([foo.c.id, bar.c.id])
+            #
+            # This one I don't know haw to represent in sqlalchemy.
+            #   select foo.id from foo, bar             -> ???
+            # It's a cross join, not an inner join like sqlalchemy `join()`.
+            # So this is not the same, because it's an inner join.
+            #     select([foo.c.id]).select_from(foo.join(bar))
+            if self.select._cols:
+                cols = [c.render() for c in self.select._cols]
+                result = "select([%s])" % ", ".join(cols)
+            else:
+                result = "select([%s])" % self.table.render()
         elif isinstance(self.table, (Join, SelectFrom)):
             cols = [c.render() for c in self.select._cols]
             result = "select([%s]).select_from(%s)" % (
@@ -134,6 +158,9 @@ class Table(Base):
 
     def Join(self, table):
         return Join(self, table)
+
+    def CrossJoin(self, table):
+        return CrossJoin(self, table)
 
     def render(self):
         return self.name
@@ -230,6 +257,16 @@ class Join(Base):
             else:
                 result += ".join(%s)" % t.table.render()
         return result
+
+
+class CrossJoin(Join):
+    def CrossJoin(self, table):
+        return self.Join(table)
+
+    def render(self):
+        if not self._tables:
+            raise Exception("CrossJoin has no tables to join")
+        return ", ".join(t.table.render() for t in self._tables)
 
 
 class Comparison(Base):

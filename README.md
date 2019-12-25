@@ -78,8 +78,16 @@ SQL Support Checklist
   - [x] Column aliases: `SELECT foo.id AS foo_id, foo.name AS foo_name from FOO`
   - [ ] Joins
 
-    - [x] Plain Join: `SELECT foo.a, bar.b FROM foo JOIN bar`
-    - [x] Inner Join: `SELECT foo.a, bar.b FROM foo INNER JOIN bar`
+    - [x] Inner Join:
+
+      - `SELECT * FROM foo JOIN bar`
+      - `SELECT * FROM foo INNER JOIN bar`
+
+    - [x] Cross Joins
+
+      - `SELECT * FROM foo, bar`
+      - `SELECT * FROM foo CROSS JOIN bar`
+
     - [ ] Left/Right Joins
     - [ ] Outer Joins
 

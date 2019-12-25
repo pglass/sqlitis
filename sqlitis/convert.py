@@ -52,6 +52,12 @@ def tokens_to_sqla(tokens):
                 i += 1
             else:
                 raise Exception("Missing argument to join")
+        elif tok.normalized == "CROSS JOIN":
+            if next_tok:
+                m = m.CrossJoin(next_tok.normalized)
+                i += 1
+            else:
+                raise Exception("Missing argument to join")
         elif tok.normalized in ["AND", "OR"]:
             raise Exception("misplaced operator %s" % tok.normalized)
         elif tok.normalized == "ON":
@@ -64,10 +70,14 @@ def tokens_to_sqla(tokens):
             clause, _ = comparison_to_sqla(subtokens)
             m = m.Where(clause)
         elif type(tok) is S.IdentifierList:
-            cols = []
-            for x in tok.get_identifiers():
-                cols.append(M.Field(x.normalized, alias=x.get_alias()))
-            m = m.Columns(cols)
+            if prev_tok.normalized == "FROM":
+                for x in tok.get_identifiers():
+                    m = m.CrossJoin(M.Table(x.normalized))
+            else:
+                cols = []
+                for x in tok.get_identifiers():
+                    cols.append(M.Field(x.normalized, alias=x.get_alias()))
+                m = m.Columns(cols)
         elif type(tok) is S.Identifier:
             if prev_tok is not None and prev_tok.normalized in ["SELECT", "DISTINCT"]:
                 m = m.Columns([M.Field(tok.normalized, alias=tok.get_alias())])

@@ -83,6 +83,30 @@ select_columns:
   sql: select a, b
   sqla: select([text('a'), text('b')])
 
+select_from_cross_join:
+  sql:
+  - select * from foo, bar
+  - select * from foo cross join bar
+  sqla: select([foo, bar])
+
+select_from_cross_join_three_tables:
+  sql:
+  - select * from foo, bar, wumbo
+  - select * from foo, bar cross join wumbo
+  - select * from foo cross join bar, wumbo
+  - select * from foo cross join bar cross join wumbo
+  sqla: select([foo, bar, wumbo])
+
+select_from_cross_join_with_where_clause:
+  sql:
+  - select * from foo, bar, wumbo where foo.id = bar.foo_id
+  - select * from foo cross join bar cross join wumbo where foo.id = bar.foo_id
+  sqla: select([foo, bar, wumbo]).where(foo.c.id == bar.c.foo_id)
+
+select_columns_from_cross_join:
+  sql: select foo.id, bar.id from foo, bar
+  sqla: select([foo.c.id, bar.c.id])
+
 select_columns_from_join:
   sql:
   - select foo.id, bar.id, foo.name, bar.name from foo join bar
