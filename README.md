@@ -100,7 +100,7 @@ SQL Support Checklist
   - [ ] Aggregate functions (SUM, AVG, COUNT, MIN, MAX): `SELECT COUNT(*) FROM foo`
   - [ ] Group by: `SELECT COUNT(*) FROM foo GROUP BY column`
   - [ ] Like
-  - [ ] Limit/offset
+  - [x] Limit/offset
   - [ ] Order by
 
 - [ ] Insert
