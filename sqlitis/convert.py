@@ -53,6 +53,14 @@ def tokens_to_sqla(tokens):
                 i += 1
             else:
                 raise Exception("Missing limit value")
+        elif tok.normalized == "OFFSET":
+            if not next_tok:
+                raise Exception("Missing offset value")
+            elif not isinstance(m, M.LimitOffset):
+                raise Exception("Cannot use OFFSET without LIMIT")
+            # TODO: Support `OFFSET 1 + 2`
+            m = m.Offset(next_tok.normalized)
+            i += 1
         elif tok.normalized in ["JOIN", "INNER JOIN"]:
             if next_tok:
                 m = m.Join(next_tok.normalized)

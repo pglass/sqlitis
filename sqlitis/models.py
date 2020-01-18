@@ -107,7 +107,7 @@ class SelectFrom(Base):
         return SelectFromWhere(self, clause)
 
     def Limit(self, value):
-        return Limit(self, value)
+        return LimitOffset(self, limit=value)
 
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
@@ -152,7 +152,7 @@ class SelectFromWhere(Base):
         self.clause = clause
 
     def Limit(self, value):
-        return Limit(self, value)
+        return LimitOffset(self, limit=value)
 
     def render(self):
         return "%s.where(%s)" % (self.select.render(), self.clause.render())
@@ -360,13 +360,18 @@ class Between(Conjuction):
         )
 
 
-class Limit(Base):
-    def __init__(self, root, value):
+class LimitOffset(Base):
+    def __init__(self, root, limit):
         self.root = root
-        self.value = value
+        self.limit = limit
+        self.offset = None
+
+    def Offset(self, offset):
+        self.offset = offset
+        return self
 
     def render(self):
-        value = self.value
-        if isinstance(self.value, Base):
-            value = value.render()
-        return "%s.limit(%s)" % (self.root.render(), value)
+        result = "%s.limit(%s)" % (self.root.render(), self.limit)
+        if self.offset is not None:
+            result += ".offset(%s)" % self.offset
+        return result
