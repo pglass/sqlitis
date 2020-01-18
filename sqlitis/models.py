@@ -106,6 +106,9 @@ class SelectFrom(Base):
     def Where(self, clause):
         return SelectFromWhere(self, clause)
 
+    def Limit(self, value):
+        return Limit(self, value)
+
     def render(self):
         if self.select.is_wildcard() or not self.select._cols:
             result = "select([%s])" % self.table.render()
@@ -147,6 +150,9 @@ class SelectFromWhere(Base):
     def __init__(self, select, clause):
         self.select = select
         self.clause = clause
+
+    def Limit(self, value):
+        return Limit(self, value)
 
     def render(self):
         return "%s.where(%s)" % (self.select.render(), self.clause.render())
@@ -352,3 +358,15 @@ class Between(Conjuction):
             lower.render(),
             upper.render(),
         )
+
+
+class Limit(Base):
+    def __init__(self, root, value):
+        self.root = root
+        self.value = value
+
+    def render(self):
+        value = self.value
+        if isinstance(self.value, Base):
+            value = value.render()
+        return "%s.limit(%s)" % (self.root.render(), value)

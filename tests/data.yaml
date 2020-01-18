@@ -377,6 +377,33 @@ select_star_from_joined_tables_with_condition:
       1, 1, 1, "squidward", 1234, 'good',  # wumbo: id, foo_id, bar_id, name, timestamp, result
     ]
 
+select_star_from_limit:
+  sql: select * from foo limit 2
+  sqla: select([foo]).limit(2)
+  data:
+    foo:
+      - {name: 'first'}
+      - {name: 'second'}
+      - {name: 'third'}
+      - {name: 'fourth'}
+  output:
+    - [1, 'first']
+    - [2, 'second']
+
+select_from_where_limit:
+  sql: select name from foo where foo.id > 1 limit 2
+  sqla: select([foo.c.name]).where(foo.c.id > 1).limit(2)
+  data:
+    foo:
+      - {name: 'first'}
+      - {name: 'second'}
+      - {name: 'third'}
+      - {name: 'fourth'}
+  output:
+    - ['second']
+    - ['third']
+
+
 insert:
   sql:
   - insert
