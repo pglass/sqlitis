@@ -447,3 +447,30 @@ insert:
   sqla: ''
   exception: |
     'INSERT' is not supported yet
+
+select_star_from_where_subquery:
+  sql: select * from foo where foo.id = (select name from bar)
+  sqla: select([foo]).where(foo.c.id == select([bar.c.name]))
+  data:
+    foo:
+      - {name: 'a'}
+      - {name: 'b'}
+      - {name: 'c'}
+    bar:
+      - {foo_id: 1, name: "a"}
+    output:
+      - [1, 'a']
+
+
+select_star_from_where_subquery_2:
+  sql: select * from foo where (select name from bar) = foo.id
+  sqla: select([foo]).where(select([bar.c.name]) == foo.c.id)
+  data:
+    foo:
+      - {name: 'a'}
+      - {name: 'b'}
+      - {name: 'c'}
+    bar:
+      - {foo_id: 1, name: "c"}
+    output:
+      - [3, 'c']
