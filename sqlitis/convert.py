@@ -249,14 +249,22 @@ def sql_literal_to_model(tok, m=M):
 
 
 @debug
-def build_comparison(tok):
-    assert type(tok) is S.Comparison
+def build_comparison(token):
+    assert type(token) is S.Comparison
 
     m = M.Comparison()
-    for tok in remove_whitespace(tok.tokens):
+    for tok in remove_whitespace(token.tokens):
         LOG.debug("  %s %s", tok, type(tok))
-        m = sql_literal_to_model(tok, m)
-        if not m:
-            raise Exception("[BUG] Failed to convert %s to model" % tok)
+        if type(tok) is S.Parenthesis:
+            subtokens = remove_whitespace(tok.tokens)
+            subquery = tokens_to_sqla(subtokens[1:-1])
+            if not m.left:
+                m.left = subquery
+            else:
+                m.right = subquery
+        else:
+            m = sql_literal_to_model(tok, m)
+            if not m:
+                raise Exception("[BUG] Failed to convert %s to model" % tok)
 
     return m
