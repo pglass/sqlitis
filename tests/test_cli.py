@@ -1,4 +1,5 @@
 import logging
+import os
 import subprocess
 import unittest
 
@@ -24,6 +25,9 @@ def run_cmd(cmd):
 class TestSqlitisCLI(unittest.TestCase):
     @ddt.file_data("cli_data.yaml")
     def test_cli(self, sql, exitcode, stdout, stderr):
+        # We have '\n' in the YAML file, but '\r\n' is printed on Windows.
+        stdout = stdout.replace("\n", os.linesep)
+        stderr = stderr.replace("\n", os.linesep)
         ret, out, err = run_cmd(["sqlitis", sql])
         self.assertEqual(ret, exitcode)
         self.assertEqual(out, stdout)
