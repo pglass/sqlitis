@@ -25,11 +25,11 @@ def unquote_quoted_table_name(name, quote_open="`", quote_close="`"):
 
 class Select(Base):
     """
-        sql                 model
-        ---                 ---
-        select *            Select().Star()
-        select id, name     Select().Columns(['id', 'name'])
-        select distinct *   Select().Distinct().Star()
+    sql                 model
+    ---                 ---
+    select *            Select().Star()
+    select id, name     Select().Columns(['id', 'name'])
+    select distinct *   Select().Distinct().Star()
     """
 
     def __init__(self):
@@ -74,8 +74,8 @@ class Select(Base):
 
 class SelectFrom(Base):
     """
-        select * from table
-        Select().star().From().Table('table')
+    select * from table
+    Select().star().From().Table('table')
     """
 
     def __init__(self, select):
@@ -205,15 +205,15 @@ class Op(Base):
 
 class Join(Base):
     """
-        sql:    foo join bar on foo.id = bar.foo_id
-        code:   Table('foo').Join('bar').
-                On().Field('foo.id').Op('=').Field('bar.foo_id')
+    sql:    foo join bar on foo.id = bar.foo_id
+    code:   Table('foo').Join('bar').
+            On().Field('foo.id').Op('=').Field('bar.foo_id')
 
-        sql:    foo join bar on foo.id = bar.foo_id
-                and foo.val <> bar.val
-        code:   Table('foo').Join('bar').
-                On().Field('foo.id').Op('=').Field('bar.foo_id')
-                And().Field('foo.val).Op('<>').Field('bar.val')
+    sql:    foo join bar on foo.id = bar.foo_id
+            and foo.val <> bar.val
+    code:   Table('foo').Join('bar').
+            On().Field('foo.id').Op('=').Field('bar.foo_id')
+            And().Field('foo.val).Op('<>').Field('bar.val')
     """
 
     class Item(object):

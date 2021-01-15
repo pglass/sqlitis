@@ -1,4 +1,3 @@
-[![Build Status](https://travis-ci.org/pglass/sqlitis.svg?branch=master)](https://travis-ci.org/pglass/sqlitis)
 [![PyPI](https://img.shields.io/pypi/v/sqlitis)](https://pypi.python.org/pypi/sqlitis)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sqlitis)](https://pypi.python.org/pypi/sqlitis)
 
