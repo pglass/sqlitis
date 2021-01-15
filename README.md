@@ -1,4 +1,4 @@
-![Tests](https://github.com/pglass/sqlitis/workflows/Test/badge.svg)
+![Tests](https://github.com/pglass/sqlitis/workflows/Test/badge.svg?branch=master)
 [![PyPI](https://img.shields.io/pypi/v/sqlitis)](https://pypi.python.org/pypi/sqlitis)
 [![PyPI - Python Version](https://img.shields.io/pypi/pyversions/sqlitis)](https://pypi.python.org/pypi/sqlitis)
 
