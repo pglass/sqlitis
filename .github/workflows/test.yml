@@ -3,28 +3,31 @@ name: Test
 on: [push]
 
 
+# Borrowing from https://github.com/zopefoundation/meta/blob/master/config/default/tests.yml.j2
 jobs:
   build:
-    runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        python-version:
-          config:
-          - [3.6, "py36"]
-          - [3.7, "py37"]
-          - [3.8, "py38"]
-          - [3.9, "py39"]
-          # Only lint once
-          - [3.6, "flake8"]
-          - [3.6, "black-check"]
+        config:
+        - [3.6, "py36"]
+        - [3.7, "py37"]
+        - [3.8, "py38"]
+        - [3.9, "py39"]
+        # Only lint once
+        - [3.6, "flake8"]
+        - [3.6, "black-check"]
+
+    runs-on: ubuntu-latest
+    name: ${{ matrix.config[1] }}
 
     steps:
     - uses: actions/checkout@v2
+
     - name: Set up Python ${{ matrix.python-version }}
       uses: actions/setup-python@v2
       with:
-        python-version: ${{ matrix.python-version }}
+        python-version: ${{ matrix.config[0] }}
 
     - name: Pip cache
       uses: actions/cache@v2
