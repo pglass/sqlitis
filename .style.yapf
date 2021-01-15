@@ -1,6 +1,0 @@
-[style]
-based_on_style = pep8
-spaces_before_comment = 2
-blank_line_before_nested_class_or_def = true
-dedent_closing_brackets = true
-split_penalty_excess_character = 100
