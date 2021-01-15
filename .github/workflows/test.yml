@@ -1,6 +1,12 @@
 name: Test
 
-on: [push]
+on:
+  push:
+    branches:
+    - master
+  pull_request:
+    branches:
+    - master
 
 
 # Borrowing from https://github.com/zopefoundation/meta/blob/master/config/default/tests.yml.j2
