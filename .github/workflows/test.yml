@@ -33,7 +33,7 @@ jobs:
       uses: actions/cache@v2
       with:
         path: ~/.cache/pip
-        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini') }}
+        key: ${{ runner.os }}-pip-${{ matrix.config[0] }}-${{ hashFiles('setup.*', 'tox.ini', 'tests/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-${{ matrix.config[0] }}-
           ${{ runner.os }}-pip-
@@ -43,5 +43,5 @@ jobs:
         python -m pip install -U pip
         pip install tox
 
-    - name: Lint
+    - name: Run Tox
       run: tox -e ${{ matrix.config[1] }}

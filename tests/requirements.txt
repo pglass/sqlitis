@@ -2,7 +2,6 @@ black ; python_version>='3.6'
 ddt
 flake8
 pytest
-pytest-catchlog
 pytest-xdist
 PyYAML
 sqlalchemy
