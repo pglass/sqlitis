@@ -2,6 +2,9 @@ class Base(object):
     def render(self):
         return ""
 
+    def __repr__(self):
+        return f"{self.__class__.__name__}{self.__dict__}"
+
 
 def convert_column(col, table=None, quote_open="`", quote_close="`"):
     """Turns foo.id into foo.c.id. If a table is given, then id becomes

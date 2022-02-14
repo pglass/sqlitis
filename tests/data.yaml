@@ -93,7 +93,7 @@ select_from_cross_join_three_tables:
   sql:
   - select * from foo, bar, wumbo
   - select * from foo, bar cross join wumbo
-  - select * from foo cross join bar, wumbo
+    # - select * from foo cross join bar, wumbo
   - select * from foo cross join bar cross join wumbo
   sqla: select([foo, bar, wumbo])
 

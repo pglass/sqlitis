@@ -1,7 +1,7 @@
 import logging
 import unittest
 
-from sqlitis.convert import to_sqla
+from n import to_sqla
 
 import ddt
 import sqlparse
